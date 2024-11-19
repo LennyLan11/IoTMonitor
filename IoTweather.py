@@ -41,6 +41,9 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)
 myAWSIoTMQTTClient.connect()
 
 # AWS 数据发布函数
+# 确保线程安全
+data_lock = threading.Lock()  # 初始化锁
+
 def publish_to_aws():
     global global_data
     while True:
@@ -49,16 +52,28 @@ def publish_to_aws():
         air_quality = read_air_quality()
         noise_level = read_noise_level()
 
-        global_data = {
-            "temperature": temperature,
-            "humidity": humidity,
-            "air_quality": air_quality,
-            "noise_level": noise_level
-        }
+        # 更新 global_data 时加锁
+        with data_lock:
+            global_data = {
+                "temperature": temperature,
+                "humidity": humidity,
+                "air_quality": air_quality,
+                "noise_level": noise_level
+            }
+        print(f"Updated global_data: {global_data}")  # 调试信息
         message = json.dumps(global_data)
         myAWSIoTMQTTClient.publish(topic, message, 1)
-        print(f"Published to AWS: {message}")
-        time.sleep(5)
+        time.sleep(5)  # 模拟 5 秒更新一次数据
+
+def push_data_to_frontend():
+    while True:
+        # 读取 global_data 时加锁，确保获取最新数据
+        with data_lock:
+            data_to_send = global_data.copy()
+        print(f"Pushing data to frontend: {data_to_send}")  # 调试信息
+        socketio.emit("update_data", data_to_send)  # 推送到前端
+        time.sleep(2)  # 每 2 秒推送一次数据
+
 
 # 启动 AWS 发布线程
 aws_thread = threading.Thread(target=publish_to_aws)

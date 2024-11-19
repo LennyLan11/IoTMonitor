@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>IoT Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Environmental Dashboard</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script> 
 </head>
 <body>
     <h1>IoT Environmental Dashboard</h1>
@@ -13,7 +16,7 @@
         <p>Air Quality: <span id="air_quality">--</span> AQI</p>
         <p>Noise Level: <span id="noise_level">--</span> dB</p>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <canvas id="dataChart" width="800" height="400"></canvas>
     <script src="/static/script.js"></script>
 </body>
 </html>
