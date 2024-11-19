@@ -1,0 +1,13 @@
+# 忽略虚拟环境
+286IoT/
+
+# 忽略证书和密钥
+IoTcertificate/
+
+# Python 缓存文件
+__pycache__/
+*.pyc
+
+# 忽略环境配置文件
+.env
+

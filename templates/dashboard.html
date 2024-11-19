@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IoT Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>IoT Environmental Dashboard</h1>
+    <div id="data">
+        <p>Temperature: <span id="temperature">--</span> °C</p>
+        <p>Humidity: <span id="humidity">--</span> %</p>
+        <p>Air Quality: <span id="air_quality">--</span> AQI</p>
+        <p>Noise Level: <span id="noise_level">--</span> dB</p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
