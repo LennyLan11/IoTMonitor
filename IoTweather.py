@@ -4,14 +4,12 @@ import random
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import threading
 
-# AWS IoT 配置
-host = "a10m4jewuy677t-ats.iot.us-east-1.amazonaws.com"  # your endpoint
+# AWS IoT things settings
+host = "a10m4jewuy677t-ats.iot.us-east-1.amazonaws.com"  # endpoint
 certPath = "/Users/haolan/Desktop/CMPE286_Project/IoTcertificate/" 
 clientId = "HaoLan's Station"
 topic = "iot/temperature_humidity"
-
-# 全局变量，用于共享数据
-global_data = {"temperature": 0, "humidity": 0}
+#global_data = {"temperature": 0, "humidity": 0}
 
 # mock data for temperature, humidity, air quality and noise level
 def read_temperature():
@@ -27,7 +25,6 @@ def read_noise_level():
     return random.uniform(40.0, 80.0)  
 
 
-# 初始化 AWS IoT 客户端
 myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId)
 myAWSIoTMQTTClient.configureEndpoint(host, 8883)
 myAWSIoTMQTTClient.configureCredentials(f"{certPath}AmazonRootCA1.pem", 
@@ -40,9 +37,7 @@ myAWSIoTMQTTClient.configureConnectDisconnectTimeout(10)
 myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)
 myAWSIoTMQTTClient.connect()
 
-# AWS 数据发布函数
-# 确保线程安全
-data_lock = threading.Lock()  # 初始化锁
+data_lock = threading.Lock() 
 
 def publish_to_aws():
     global global_data
@@ -52,7 +47,6 @@ def publish_to_aws():
         air_quality = read_air_quality()
         noise_level = read_noise_level()
 
-        # 更新 global_data 时加锁
         with data_lock:
             global_data = {
                 "temperature": temperature,
@@ -60,22 +54,20 @@ def publish_to_aws():
                 "air_quality": air_quality,
                 "noise_level": noise_level
             }
-        print(f"Updated global_data: {global_data}")  # 调试信息
+        
         message = json.dumps(global_data)
         myAWSIoTMQTTClient.publish(topic, message, 1)
-        time.sleep(5)  # 模拟 5 秒更新一次数据
+        # mock updates for 5 seconds
+        time.sleep(5)  
 
 def push_data_to_frontend():
     while True:
-        # 读取 global_data 时加锁，确保获取最新数据
         with data_lock:
             data_to_send = global_data.copy()
-        print(f"Pushing data to frontend: {data_to_send}")  # 调试信息
-        socketio.emit("update_data", data_to_send)  # 推送到前端
-        time.sleep(2)  # 每 2 秒推送一次数据
+        print(f"Pushing data to frontend: {data_to_send}")  
+        socketio.emit("update_data", data_to_send)  
+        time.sleep(5)  
 
-
-# 启动 AWS 发布线程
 aws_thread = threading.Thread(target=publish_to_aws)
 aws_thread.daemon = True
 aws_thread.start()

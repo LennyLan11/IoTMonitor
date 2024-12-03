@@ -6,17 +6,55 @@
     <title>IoT Environmental Dashboard</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script> 
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px;
+        }
+        .chart-container {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+        .overall-data {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>IoT Environmental Dashboard</h1>
-    <div id="data">
-        <p>Temperature: <span id="temperature">--</span> °C</p>
-        <p>Humidity: <span id="humidity">--</span> %</p>
-        <p>Air Quality: <span id="air_quality">--</span> AQI</p>
-        <p>Noise Level: <span id="noise_level">--</span> dB</p>
+    <h1 style="text-align: center;">IoT Environmental Dashboard</h1>
+    <div class="overall-data">
+        Temperature: <span id="temperature">--</span> °C &nbsp; | &nbsp;
+        Humidity: <span id="humidity">--</span> % &nbsp; | &nbsp;
+        Air Quality: <span id="air_quality">--</span> AQI &nbsp; | &nbsp;
+        Noise Level: <span id="noise_level">--</span> dB
     </div>
-    <canvas id="dataChart" width="800" height="400"></canvas>
+    <div class="grid-container">
+        <div class="chart-container">
+            <canvas id="temperatureChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="humidityChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="airQualityChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="noiseLevelChart"></canvas>
+        </div>
+    </div>
     <script src="/static/script.js"></script>
 </body>
 </html>

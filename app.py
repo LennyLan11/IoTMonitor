@@ -8,15 +8,12 @@ from IoTweather import global_data, read_temperature, read_humidity, read_air_qu
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-
-# 初始化锁
 data_lock = threading.Lock()
 
 @app.route("/")
 def dashboard():
     return render_template("dashboard.html")
 
-# 发布到 AWS 的线程
 def publish_to_aws():
     global global_data
     while True:
@@ -25,7 +22,6 @@ def publish_to_aws():
         air_quality = read_air_quality()
         noise_level = read_noise_level()
 
-        # 更新 global_data 时加锁
         with data_lock:
             global_data = {
                 "temperature": temperature,
@@ -36,17 +32,14 @@ def publish_to_aws():
         print(f"Updated global_data in publish_to_aws: {global_data}")
         time.sleep(5)
 
-# 推送到前端的线程
 def push_data_to_frontend():
     while True:
-        # 读取 global_data 时加锁
         with data_lock:
             data_to_send = global_data.copy()
         print(f"Pushing data to frontend: {data_to_send}")
         socketio.emit("update_data", data_to_send)
         time.sleep(5)
 
-# 启动后台线程
 thread_publish = threading.Thread(target=publish_to_aws)
 thread_publish.daemon = True
 thread_publish.start()
